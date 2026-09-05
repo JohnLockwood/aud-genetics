@@ -7,6 +7,10 @@ env/
 __pycache__/
 *.pyc
 
+# Mac junk and bigsnpr backups
+.DS_Store
+*.bk
+
 # Genomic binary files & large data artifacts
 data/raw/*
 data/processed/*
@@ -23,3 +27,8 @@ data/processed/*
 *.tar.gz
 *.zip
 *.log
+
+# renv isolated library
+renv/library/
+renv/staging/
+renv/local/

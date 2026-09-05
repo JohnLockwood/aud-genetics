@@ -1,0 +1,21 @@
+# AUD Genetics (`aud-genetics`)
+
+An applied computational genetics and machine-learning project exploring the predictive architecture of Alcohol Use Disorder (AUD).
+
+## Overview
+
+AUD is a complex, polygenic trait influenced by widespread variants across the genome rather than single candidate loci. This project systematically investigates how different genetic feature representations—from single candidate genes (e.g., *GABRA2*) to polygenic risk scores (PRS) and regularized machine-learning models—perform in classifying and predicting AUD risk.
+
+The repository functions simultaneously as an applied bioinformatics learning laboratory and a reproducible computational pipeline.
+
+## Repository Architecture
+
+```text
+aud-genetics/
+├── config/             # Reference coordinates, QC parameters, and pipeline configs
+├── data/               # Local data layers (raw, processed, metadata; git-ignored)
+├── lessons/            # Sequential, milestone-based tutorials and curriculum
+├── literature/         # Key reference papers, study summaries, and notes
+├── scripts/            # CLI utilities and processing scripts (PLINK, R, Python, Bash)
+├── analyses/           # Exploratory work, GWAS pipelines, PRS, and ML experiments
+└── results/            # Generated figures, summary tables, and final reports

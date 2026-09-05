@@ -19,3 +19,14 @@ aud-genetics/
 ├── scripts/            # CLI utilities and processing scripts (PLINK, R, Python, Bash)
 ├── analyses/           # Exploratory work, GWAS pipelines, PRS, and ML experiments
 └── results/            # Generated figures, summary tables, and final reports
+
+
+## Tooling & Core Stack
+
+* Genomics Workhorse: PLINK 2.0, bcftools
+* Statistical Genetics (R): bigsnpr, glmnet, PRSice-2
+* Machine Learning & Analysis (Python/R): tidymodels, scikit-learn, xgboost
+* Workflow Automation: Bash shell scripts
+
+# Data Governance Note
+This project is designed to handle individual-level genomic data (such as cohorts from dbGaP/COGA). All individual-level genotype arrays, VCFs, and processed PLINK binary files are strictly excluded from version control via .gitignore to maintain data privacy and compliance.

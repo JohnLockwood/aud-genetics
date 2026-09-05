@@ -1,0 +1,25 @@
+# Environments & IDEs
+.venv/
+env/
+.Rproj.user/
+.Rhistory
+.RData
+__pycache__/
+*.pyc
+
+# Genomic binary files & large data artifacts
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.bed
+*.bim
+*.fam
+*.pgen
+*.pvar
+*.psam
+*.vcf*
+*.bgen
+*.tar.gz
+*.zip
+*.log

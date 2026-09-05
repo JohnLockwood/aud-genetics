@@ -1,0 +1,31 @@
+name: aud-genetics
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # Base runtime
+  - python=3.12
+  - pip
+
+  # CLI Genomics Binaries
+  # - plink2 Uncomment to include See note in README.
+  - bcftools
+  - htslib
+
+  # Data Processing & ML Stack
+  - numpy
+  - scipy
+  - pandas
+  - pyarrow
+  - scikit-learn
+  - xgboost
+  - statsmodels
+
+  # Visualization & Exploration
+  - matplotlib
+  - seaborn
+  - jupyterlab
+
+  # Bridge for passing data/frames between Python and system R
+  - pip:
+      - rpy2

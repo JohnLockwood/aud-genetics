@@ -28,5 +28,15 @@ aud-genetics/
 * Machine Learning & Analysis (Python/R): tidymodels, scikit-learn, xgboost
 * Workflow Automation: Bash shell scripts
 
-# Data Governance Note
+## Data Governance Note
 This project is designed to handle individual-level genomic data (such as cohorts from dbGaP/COGA). All individual-level genotype arrays, VCFs, and processed PLINK binary files are strictly excluded from version control via .gitignore to maintain data privacy and compliance.
+
+## Setup
+
+* Run conda env create -f environment.yml
+That file contains a line:
+
+```
+# - plink2 Uncomment to include.  See note in README.
+```
+The note is, this:  you should uncomment this on Linux/Windows.  On Apple Silicon use ```brew install plink-ng``` instead.

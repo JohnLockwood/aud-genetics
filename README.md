@@ -19,7 +19,7 @@ aud-genetics/
 ├── scripts/            # CLI utilities and processing scripts (PLINK, R, Python, Bash)
 ├── analyses/           # Exploratory work, GWAS pipelines, PRS, and ML experiments
 └── results/            # Generated figures, summary tables, and final reports
-
+```
 
 ## Tooling & Core Stack
 

@@ -1,0 +1,13 @@
+Package: audgenetics
+Type: Project
+Title: Reproducible Methods for Alcohol Use Disorder Genetics
+Version: 0.0.0.9000
+Description: A teaching and research project for reproducible analyses of the
+    genetic architecture and prediction of Alcohol Use Disorder.
+Depends:
+    R (>= 4.6.0)
+Imports:
+    bigsnpr,
+    glmnet,
+    pROC,
+    tidymodels

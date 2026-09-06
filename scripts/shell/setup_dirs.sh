@@ -10,8 +10,7 @@ fi
 
 echo "Setting up aud-genetics project structure..."
 
-# 1. Clear old lesson structure if present and scaffold consolidated layout
-rm -rf lessons/*
+# 1. Scaffold the consolidated layout without removing existing work.
 mkdir -p lessons/01-genomics-data-and-qc \
          lessons/02-population-structure-pca \
          lessons/03-gwas-and-prs \
@@ -39,43 +38,19 @@ mkdir -p scripts/plink \
 mkdir -p analyses/exploratory \
          analyses/gwas \
          analyses/prs \
-         analyses/ml
+         analyses/machine-learning
+
+# Project-level teaching and reporting records
+mkdir -p docs \
+         notes/templates
 
 # Results
 mkdir -p results/figures \
          results/tables \
          results/reports
 
-# 2. Write root .gitignore to block large/binary genomics files
-cat << 'EOF' > .gitignore
-# Environments & IDEs
-.venv/
-env/
-.Rproj.user/
-.Rhistory
-.RData
-__pycache__/
-*.pyc
-
-# Genomic binary files & large data artifacts
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-*.bed
-*.bim
-*.fam
-*.pgen
-*.pvar
-*.psam
-*.vcf*
-*.bgen
-*.tar.gz
-*.zip
-*.log
-EOF
-
-# 3. Add .gitkeep markers to preserve empty directories in git
-find config lessons literature data scripts analyses results -type d -exec touch {}/.gitkeep \;
+# 2. Add .gitkeep markers to preserve empty directories in git. Existing files
+# (including .gitignore) are deliberately left untouched.
+find config lessons literature data scripts analyses results docs notes -type d -exec touch {}/.gitkeep \;
 
 echo "Repository structure and .gitignore successfully updated."

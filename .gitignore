@@ -32,3 +32,6 @@ data/processed/*
 renv/library/
 renv/staging/
 renv/local/
+
+# Local recovery backups of the isolated R library
+renv/library.pre-repair-*/

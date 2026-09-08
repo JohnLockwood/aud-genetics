@@ -12,6 +12,9 @@ dependencies:
   - bcftools
   - htslib
 
+  # CLI utilities
+  - wget
+
   # Data Processing & ML Stack
   - numpy
   - scipy

@@ -23,6 +23,7 @@ dependencies:
   - scikit-learn
   - xgboost
   - statsmodels
+  - polars
 
   # Visualization & Exploration
   - matplotlib

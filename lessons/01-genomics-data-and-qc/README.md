@@ -82,6 +82,14 @@ Before running PLINK, inspect the VCF and predict:
 2. Which sample has the most missing genotype calls? What fraction of its eight variant calls is missing?
 3. Which variants and samples have no missing calls?
 
+## Checkpoint -- Student Answers
+
+
+
+## AI Comments on student answers
+
+
+
 Then generate both reports:
 
 ```sh
@@ -102,6 +110,78 @@ In each report, `MISSING_CT` is the count of missing genotype calls, `OBS_CT` is
 
 <!-- Record predictions, PLINK results, and interpretation here. -->
 
+My predictions were:
+
+1. Variant toy4 has the most missing genotype calls, with 2/5 (40%) missing. (Ada and chen)
+2. Chen has the most missing genotype calls, with 2/8 (1/4, 25%) of its variant calls missing?  (toy4 and toy7)
+3. The following variants have no missing samples:  toy1, toy2, toy3, toy6, toy8.  For samples, the ones with no missing variants are Ben and Dia.
+
+Note:  Using `cat data/processed/tiny-missingness.smiss` and `cat data/processed/tiny-missingness.vmiss`, I compared the files and they seem to line up with the predictions correctly.  Can you confirm, oh AI professor?
+
 ## AI Comments on missingness answers
+
+The predictions and their interpretation are correct, and both PLINK reports confirm them.
+
+* In `.vmiss`, `toy4` has `MISSING_CT = 2`, `OBS_CT = 5`, and `F_MISS = 0.4`. The other incomplete variants are `toy5` and `toy7`, each with one missing call and `F_MISS = 0.2`. The remaining five variants have `F_MISS = 0`.
+* In `.smiss`, Chen has `MISSING_CT = 2`, `OBS_CT = 8`, and `F_MISS = 0.25`. Ada and Eli each have one missing call and `F_MISS = 0.125`; Ben and Dia have none.
+
+The denominator changes with the direction of the report. A row in `.vmiss` asks how many of the five samples are missing at that variant, whereas a row in `.smiss` asks how many of the eight variants are missing for that sample. This distinction becomes important when the numbers of samples and variants are much larger and less memorable.
+
+There is one transcription error in the note about inspecting the reports: it gives `cat data/processed/tiny-missingness.smiss` twice. The second command should be:
+
+```sh
+cat data/processed/tiny-missingness.vmiss
+```
+
+OK, fixed, thanks.
+
+The underlying comparison was nevertheless correct. This checkpoint demonstrates how to calculate and verify missingness; it does not yet establish scientifically defensible filtering thresholds.
+
+## Third checkpoint: filtering on missingness
+
+PLINK uses two similarly named filters in opposite directions:
+
+* `--geno` removes **variants** whose missing-call frequency is greater than the specified threshold.
+* `--mind` removes **samples** whose missing-call frequency is greater than the specified threshold.
+
+The threshold is a ceiling. With a threshold of `0.20`, an item with exactly 20% missingness is retained; an item with more than 20% is removed. PLINK 2 uses a default threshold of `0.1` if either option is supplied without a number, but this exercise supplies the number explicitly.
+
+We will apply each filter separately to the original dataset. This lets us see what each option does without allowing one filter to change the data considered by the other.
+
+Before running PLINK, use the `.vmiss` and `.smiss` reports to predict:
+
+1. Which variants will `--geno 0.20` remove? Which variants sit exactly on the threshold and should remain?
+2. Which samples will `--mind 0.20` remove?
+3. How many variants and samples should remain in each output dataset?
+
+Run the variant filter:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --geno 0.20 \
+  --make-pgen \
+  --out data/processed/tiny-geno-filtered
+```
+
+Run the sample filter independently from the same original dataset:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --mind 0.20 \
+  --make-pgen \
+  --out data/processed/tiny-mind-filtered
+```
+
+Inspect `tiny-geno-filtered.pvar` to see which variants remain and `tiny-mind-filtered.psam` to see which samples remain. Also read each `.log`: PLINK reports how many variants or samples it removed and how many it retained.
+
+The value `0.20` was chosen to make the boundary behavior visible in this tiny dataset. It is an illustrative teaching threshold, not a recommended default for research. Real thresholds depend on the assay, calling or imputation process, cohort, downstream analysis, and a documented QC plan.
+
+## Checkpoint -- Student Answers on missingness filtering
+
+<!-- Record predictions, observed results, and an explanation of the difference between --geno and --mind here. -->
+
+## AI Comments on missingness-filtering answers
 
 <!-- Add feedback after the student completes the checkpoint. -->

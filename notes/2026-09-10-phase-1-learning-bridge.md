@@ -52,3 +52,13 @@ The learner correctly interpreted all genotypes at `toy1`, identified the missin
 The learner used PLINK 2 to convert the synthetic VCF into native `.pgen`, `.pvar`, and `.psam` files. Inspection confirmed that PLINK loaded the expected five samples and eight variants. The log records PLINK v2.0.0-a.7.4 M1 (18 Aug 2026), the input VCF, output prefix, and successful conversion. Generated files remain ignored under `data/processed/`.
 
 The next checkpoint is missingness. The learner will first predict variant and sample missingness from the VCF, then run `plink2 --missing` on the native files and reconcile the `.vmiss` and `.smiss` reports with those predictions. This isolates one QC concept before introducing thresholds or allele-frequency filtering.
+
+## Follow-up: missingness checkpoint reviewed
+
+The learner correctly predicted and verified both directions of missingness. At the variant level, `toy4` has two missing calls among five samples (`F_MISS = 0.4`); `toy5` and `toy7` each have one; the remaining variants have none. At the sample level, Chen has two missing calls among eight variants (`F_MISS = 0.25`); Ada and Eli each have one; Ben and Dia have none.
+
+Feedback added to the lesson emphasizes that `.vmiss` uses samples as the denominator for each variant, while `.smiss` uses variants as the denominator for each sample. It also corrects a repeated `.smiss` filename in the student's command description; the reported interpretation itself was correct. The next proposed lesson applies illustrative `--geno` and `--mind` filters while keeping threshold selection distinct from calculation.
+
+## Follow-up: missingness-filtering lesson prepared
+
+At the project owner's request, the next lesson was prepared for later completion. It applies `--geno 0.20` and `--mind 0.20` in separate runs from the original synthetic dataset, asks for predictions before execution, and uses an exact-threshold case to teach that PLINK removes missingness frequencies greater than the ceiling. The lesson explicitly labels `0.20` as an illustrative value rather than a recommended research threshold.

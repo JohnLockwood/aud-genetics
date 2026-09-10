@@ -21,4 +21,6 @@ Notes are repository content. They must contain no controlled-access or particip
 
 ## Indexing
 
-Add each new note to `notes/INDEX.md`, and update `SYLLABUS.md` when the lesson sequence or current lesson changes.
+Add each new note to `notes/INDEX.md`, newest first. Update the current lesson and next actions in `SYLLABUS.md` when work is selected or completed, linking completion evidence to the session note. Change the learning sequence only when the curriculum changes.
+
+`SYLLABUS.md` owns the current plan and active actions; dated notes own session history and provenance; the index provides navigation. A note's next-lesson section records suggestions made in that session, not a separately maintained task queue. `STATUS.md` is deprecated and retained only as a historical snapshot; do not update it.

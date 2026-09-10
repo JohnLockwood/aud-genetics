@@ -23,3 +23,5 @@
 ## Assumptions, limitations, and open questions
 
 ## Next lesson
+
+<!-- Record the next lesson suggested at session close. Maintain selected active actions in SYLLABUS.md, with a link to this note; do not maintain a second live task queue here. -->

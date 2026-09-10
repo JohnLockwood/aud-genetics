@@ -1,0 +1,14 @@
+##fileformat=VCFv4.2
+##fileDate=20260910
+##source=aud-genetics-synthetic-teaching-example
+##contig=<ID=1,length=1000000>
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	Ada	Ben	Chen	Dia	Eli
+1	100	toy1	A	G	.	PASS	.	GT	0/0	0/1	1/1	0/0	0/1
+1	200	toy2	C	T	.	PASS	.	GT	0/0	0/0	0/0	0/0	0/0
+1	300	toy3	G	A	.	PASS	.	GT	0/1	0/0	0/0	0/0	0/0
+1	400	toy4	T	C	.	PASS	.	GT	./.	0/1	./.	0/0	1/1
+1	500	toy5	A	C	.	PASS	.	GT	0/0	0/1	0/0	1/1	./.
+1	600	toy6	G	T	.	PASS	.	GT	1/1	0/1	0/0	0/1	1/1
+1	700	toy7	C	G	.	PASS	.	GT	0/1	0/1	./.	0/1	0/1
+1	800	toy8	T	A	.	PASS	.	GT	1/1	1/1	1/1	1/1	1/1

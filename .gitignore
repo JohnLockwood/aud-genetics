@@ -24,6 +24,7 @@ data/downloads/*
 *.pvar
 *.psam
 *.vcf*
+!lessons/01-genomics-data-and-qc/tiny-genotypes.vcf
 *.bgen
 *.tar.gz
 *.zip

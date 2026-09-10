@@ -106,8 +106,10 @@ Lesson materials: [`lessons/04-machine-learning`](lessons/04-machine-learning)
 
 This section is the authoritative current plan. Keep it short. Update it when an action is selected or completed, and link completed work to its session note.
 
-**Current lesson: Phase 0 — Data governance and reproducible research record.** Before pursuing any individual-level human data, classify the prospective data and identify the governing access agreement and approved computing environment. Until then, use synthetic, public, or aggregate data only.
+**Current lesson: Phase 1 — Reading a tiny synthetic genotype dataset.** Begin with a hand-inspectable VCF before applying QC commands or moving to a public 1000 Genomes subset. The repository remains limited to synthetic, public, aggregate, and other non-sensitive material.
 
 Recent exploration: [PRS notes and article questions](notes/2026-09-08-prs-polygenic-risk-scores.md#article-questions). Exploring a later topic does not by itself establish completion of earlier phases.
 
-* [ ] Reconcile the current lesson with the recent PRS exploration and select the next bounded learning task. Candidate: unpack Deng's genotyping, imputation, and QC section, producing a short glossary and a list of remaining statistical questions.
+* [x] Complete the [first VCF checkpoint](lessons/01-genomics-data-and-qc/README.md#first-checkpoint-read-the-file): interpret `REF`, `ALT`, and `GT`, identify missing calls, and calculate the alternate-allele frequency at `toy1` by hand. See the [session note](notes/2026-09-10-phase-1-learning-bridge.md#follow-up-first-checkpoint-reviewed).
+* [x] Import the synthetic VCF with PLINK 2 and create the native `.pgen`, `.pvar`, and `.psam` files.
+* [ ] Complete the [missingness checkpoint](lessons/01-genomics-data-and-qc/README.md#second-checkpoint-missingness): predict sample and variant missingness by hand, generate PLINK's reports, and reconcile the results.

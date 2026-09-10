@@ -55,3 +55,14 @@ OK, that means I didn't need to un-gzip it necessarily.
 * [ ] Document how to do the sorting using sort etc, even if it means supplanting the python script with some simple bash equivalent.
 * Go back and read the article (RTFM, dude.) See todo list item above
 * [ ] Consider that if you're looking to discover top weighted SNPs, you might need a harmonized hg38 version to look this up efficiently.  Ask openAI about that.  So far some of the search results for rs* have been underwhelming on https://gemini.google.com/app/324d9ddb5934ccd5
+
+
+## September 9, 2026
+## Article Questions
+
+Reading Deng:
+
+* Used 23AndMe for sequencing?
+* Get ChatGPT to unpack this section: "Genotyping, imputation, and quality control" (page 2)
+* Generally speaking the statistics went over my head.  How to fill in that gap?
+* 

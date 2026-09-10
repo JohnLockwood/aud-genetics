@@ -1,4 +1,10 @@
-# Project Status & Work Log
+# Project Status & Work Log (deprecated)
+
+**Deprecated September 10, 2026.** Use [SYLLABUS.md](SYLLABUS.md#current-lesson-and-next-actions) for the current lesson and next actions, and [notes/INDEX.md](notes/INDEX.md) for session history. Do not update this file.
+
+The September 5 snapshot below is retained as historical context. Its milestone labels, task suggestions, and environment claims are not a statement of current status or authorization for data work; [AGENTS.md](AGENTS.md) governs the repository's data boundary.
+
+---
 
 **Project:** AUD Genetics (`aud-genetics`)  
 **Current Milestone:** Phase 1 — Genomic Data Wrangling & QC  

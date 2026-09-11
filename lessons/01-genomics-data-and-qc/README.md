@@ -200,6 +200,12 @@ The initial `toy1` entry was a caught and documented transcription error, not a 
 
 ## Fourth checkpoint: alternate-allele counts and frequencies
 
+If the terminology in the next sentence is unfamiliar, pause here and complete the [short genetics-foundations bridge](genetics-foundations.md). It explains the assumptions that make the allele-count arithmetic work.
+
+
+John's notes:  For unpacking such terminology as below, a useful resource is the [Talking Glossary of Gemic and Human Terms](https://www.genome.gov/genetics-glossary)
+
+
 For these fictional autosomal, diploid, biallelic variants, each nonmissing genotype contributes two observed allele copies:
 
 | Genotype | Alternate-allele copies | Observed allele copies |
@@ -290,4 +296,19 @@ Comparing the output of "--freq" and "--freq count" to my table, it appears that
 
 ## AI Comments on alternate-allele-frequency answers
 
-<!-- Add feedback after the student completes the checkpoint. -->
+Every count and frequency in the completed table is correct; “more or less correct” is unnecessarily cautious here. Both PLINK reports agree exactly with the hand calculations.
+
+The missing-data explanation is also correct. More precisely, each missing diploid genotype removes two allele observations from the denominator. Thus, the two missing genotypes at `toy4` reduce `OBS_CT` from 10 to 6, while the single missing genotype at each of `toy5` and `toy7` reduces it from 10 to 8. A missing call contributes neither reference nor alternate copies.
+
+The concerns about minor-allele frequency identify real limitations, but they do not prevent us from calculating a sample MAF here:
+
+1. **Sample size affects precision, not whether the quantity is defined.** We can calculate the observed allele frequencies and MAF among five fictional samples exactly. They would be poor, highly variable estimates of frequencies in a larger population. “Statistical significance” is not the issue because we are calculating a descriptive proportion rather than testing a hypothesis. Missingness could create additional bias if whether a call is missing depends on its genotype.
+2. **These teaching variants are biallelic by construction.** The scope section states that assumption, and each VCF row provides one `REF` allele and exactly one `ALT` allele. A multiallelic VCF row would list multiple comma-separated alternate alleles, such as `ALT=C,G`, and could use genotype allele indexes such as `0/2` or `1/2`. The simple `min(REF frequency, ALT frequency)` rule is specifically for the biallelic case.
+
+The data now demonstrate why `ALT` and “minor” are different:
+
+* At `toy2`, `ALT` frequency is 0 and sample MAF is 0.
+* At `toy8`, `ALT` frequency is 1, but the reference-allele frequency is 0, so sample MAF is again 0.
+* At `toy6`, `ALT` frequency is 0.60. The reference allele is therefore the less common allele in this sample, and sample MAF is 0.40.
+
+Finally, significant digits are not a problem in the table. These values are exact ratios of small integer counts: `3/8 = 0.375`, while `4/10 = 0.4`. Writing `0.40` instead of `0.4` can make a column visually consistent, but it does not make this small sample more precise or informative about a population.

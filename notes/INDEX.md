@@ -4,6 +4,7 @@ This is the running index for tutorial, research, and design notes. New entries 
 
 | Date | Note | Topic | Outcome |
 |---|---|---|---|
+| 2026-09-11 | [Alternate-allele-frequency checkpoint](2026-09-11-allele-frequency.md) | Allele counts, observed frequencies, and MAF interpretation | Calculations confirmed; sample MAF distinguished from population inference |
 | 2026-09-11 | [Missingness-filtering checkpoint](2026-09-11-missingness-filtering.md) | Applying `--geno` and `--mind` independently | Predictions confirmed; threshold boundary and filter direction understood |
 | 2026-09-10 | [Phase 1 learning bridge](2026-09-10-phase-1-learning-bridge.md) | Returning from PRS exploration to genotype and QC foundations | Proposed small synthetic-table lessons with understanding checkpoints |
 | 2026-09-10 | [Documentation workflow review](2026-09-10-documentation-workflow-review.md) | Curriculum, active tasks, and session history | Deprecated STATUS and consolidated ROADMAP content into the syllabus |

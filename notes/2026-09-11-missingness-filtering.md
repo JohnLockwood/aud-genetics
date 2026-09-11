@@ -29,3 +29,7 @@ The threshold of 0.20 is illustrative and does not establish a suitable research
 ## Next lesson
 
 Calculate alternate-allele counts and frequencies across the synthetic variants and compare them with a PLINK `--freq counts` report.
+
+## Follow-up: allele-frequency lesson prepared
+
+The project owner chose to continue to alternate-allele frequency. The fourth checkpoint was added to the Phase 1 README with a hand-calculation table for all eight variants, questions addressing missing calls and the distinction between alternate and minor alleles, and separate PLINK commands for `.acount` and `.afreq` reports. The worked `toy1` calculation from the first checkpoint is retained as an example. The syllabus now links to this checkpoint as the current action.

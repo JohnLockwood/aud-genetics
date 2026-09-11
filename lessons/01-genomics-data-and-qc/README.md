@@ -197,3 +197,83 @@ The corrected predictions are accurate and agree with the generated files and lo
 The distinction between the commands is present in the predictions, though it is worth stating explicitly: `--geno` evaluates each **variant across samples**, while `--mind` evaluates each **sample across variants**. Applying them separately here preserves the original denominators and makes each result easy to verify. A later combined QC pipeline will require attention to filtering order because removing samples can change variant missingness, and removing variants can change sample missingness.
 
 The initial `toy1` entry was a caught and documented transcription error, not a conceptual error in the completed analysis. Checking the prediction against `.vmiss`, then checking PLINK's log and output `.pvar`, is exactly the right recovery process.
+
+## Fourth checkpoint: alternate-allele counts and frequencies
+
+For these fictional autosomal, diploid, biallelic variants, each nonmissing genotype contributes two observed allele copies:
+
+| Genotype | Alternate-allele copies | Observed allele copies |
+|---|---:|---:|
+| `0/0` | 0 | 2 |
+| `0/1` | 1 | 2 |
+| `1/1` | 2 | 2 |
+| `./.` | 0 | 0 |
+
+The last row needs careful wording: a missing genotype contributes nothing to either count because its alleles were not observed. It does not provide evidence for zero alternate alleles.
+
+For each variant:
+
+```text
+alternate-allele frequency = alternate-allele copies / observed allele copies
+```
+
+Use the VCF to complete this table by hand before running PLINK. `toy1` is carried forward as the worked example from the first checkpoint.
+
+| Variant | `ALT` | Alternate copies | Observed copies | Alternate frequency |
+|---|---|---:|---:|---:|
+| `toy1` | G | 4 | 10 | 0.40 |
+| `toy2` |  |  |  |  |
+| `toy3` |  |  |  |  |
+| `toy4` |  |  |  |  |
+| `toy5` |  |  |  |  |
+| `toy6` |  |  |  |  |
+| `toy7` |  |  |  |  |
+| `toy8` |  |  |  |  |
+
+Then ask:
+
+1. Why do `toy4`, `toy5`, and `toy7` have fewer observed allele copies than `toy1`?
+2. Which variant has alternate-allele frequency 0? Which has alternate-allele frequency 1?
+3. Why is “alternate allele” not a synonym for “minor allele”? For a biallelic variant, the minor-allele frequency is the smaller of the reference- and alternate-allele frequencies.
+
+Generate PLINK's allele-count report:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --freq counts \
+  --out data/processed/tiny-allele-counts
+```
+
+This writes `tiny-allele-counts.acount`. In this dataset, `ALT_CTS` is the alternate-allele count and `OBS_CT` is the number of observed allele copies. PLINK calculates frequencies from founders by default; all five fictional samples are founders, so all are included here.
+
+Generate the corresponding frequency report:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --freq \
+  --out data/processed/tiny-allele-frequencies
+```
+
+This writes `tiny-allele-frequencies.afreq`, where `ALT_FREQS` reports the alternate-allele frequency. Compare both PLINK reports, row by row, with the hand-completed table. Read both logs as part of the check.
+
+## Checkpoint -- Student Answers on alternate-allele frequency
+
+| Variant | `ALT` | Alternate copies | Observed copies | Alternate frequency |
+|---|---|---:|---:|---:|
+| `toy1` | G | 4 | 10 | 0.40 |
+| `toy2` | T |  |  |  |
+| `toy3` | A |  |  |  |
+| `toy4` | C |  |  |  |
+| `toy5` | C |  |  |  |
+| `toy6` | T |  |  |  |
+| `toy7` | G |  |  |  |
+| `toy8` | A |  |  |  |
+
+
+<!-- Complete the table above or reproduce it here, answer the three interpretation questions, and describe whether both PLINK reports agree. -->
+
+## AI Comments on alternate-allele-frequency answers
+
+<!-- Add feedback after the student completes the checkpoint. -->

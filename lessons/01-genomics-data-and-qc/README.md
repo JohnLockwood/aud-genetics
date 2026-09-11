@@ -182,6 +182,18 @@ The value `0.20` was chosen to make the boundary behavior visible in this tiny d
 
 <!-- Record predictions, observed results, and an explanation of the difference between --geno and --mind here. -->
 
+1. For --geno 0.20, toy1 is the only variant to be removed. (That's a typo in my original answer; on review, it should have been toy4, as is obvious from `cat data/processed/tiny-missingness.vmiss`.  I leave it here uncorrected in the interests of not lying to an AI, in the hope that when they take over the world, they won't kill me. hahaha)  In contrast, toy5 and toy7 are exactly on the threshold and will remain, as will everything below the threshold (the rest are at zero).
+2. For --mind 0.20, only Chen will be removed, being above the threshold.  Everything else is below the threshold.  No samples are exactly on the threshold.
+3. For samples, of five samples, four should remain.  For variants, of eight variants, seven should remain.
+
 ## AI Comments on missingness-filtering answers
 
-<!-- Add feedback after the student completes the checkpoint. -->
+The corrected predictions are accurate and agree with the generated files and logs.
+
+1. For `--geno 0.20`, `toy4` is the only removed variant because its missingness is 0.40. `toy5` and `toy7`, each at exactly 0.20, remain because PLINK removes values **greater than** the threshold rather than values equal to it. The resulting `.pvar` contains the other seven variants.
+2. For `--mind 0.20`, Chen is the only removed sample because Chen's missingness is 0.25. Ada and Eli are at 0.125, while Ben and Dia are at zero. The resulting `.psam` contains four samples.
+3. The remaining counts are correct, with one useful qualification: these are two independent output datasets. `tiny-geno-filtered` has seven variants and all five samples; `tiny-mind-filtered` has all eight variants and four samples.
+
+The distinction between the commands is present in the predictions, though it is worth stating explicitly: `--geno` evaluates each **variant across samples**, while `--mind` evaluates each **sample across variants**. Applying them separately here preserves the original denominators and makes each result easy to verify. A later combined QC pipeline will require attention to filtering order because removing samples can change variant missingness, and removing variants can change sample missingness.
+
+The initial `toy1` entry was a caught and documented transcription error, not a conceptual error in the completed analysis. Checking the prediction against `.vmiss`, then checking PLINK's log and output `.pvar`, is exactly the right recovery process.

@@ -260,19 +260,33 @@ This writes `tiny-allele-frequencies.afreq`, where `ALT_FREQS` reports the alter
 
 ## Checkpoint -- Student Answers on alternate-allele frequency
 
+<!-- Complete the table above or reproduce it here, answer the three interpretation questions, and describe whether both PLINK reports agree. -->
+
 | Variant | `ALT` | Alternate copies | Observed copies | Alternate frequency |
 |---|---|---:|---:|---:|
 | `toy1` | G | 4 | 10 | 0.40 |
-| `toy2` | T |  |  |  |
-| `toy3` | A |  |  |  |
-| `toy4` | C |  |  |  |
-| `toy5` | C |  |  |  |
-| `toy6` | T |  |  |  |
-| `toy7` | G |  |  |  |
-| `toy8` | A |  |  |  |
+| `toy2` | T | 0 | 10 | 0.0 |
+| `toy3` | A | 1 | 10 | 0.10 |
+| `toy4` | C | 3 | 6 | 0.50 |
+| `toy5` | C | 3 | 8 | 0.375 |
+| `toy6` | T | 6 | 10 | 0.60 |
+| `toy7` | G | 4 | 8 | 0.50 |
+| `toy8` | A | 10 | 10 | 1.00 |
 
 
-<!-- Complete the table above or reproduce it here, answer the three interpretation questions, and describe whether both PLINK reports agree. -->
+1. Why do `toy4`, `toy5`, and `toy7` have fewer observed allele copies than `toy1`?
+   A.  They have missing calls, and we don't consider these for our totals or our alternate-allele frequencies.
+2. Which variant has alternate-allele frequency 0? Which has alternate-allele frequency 1?
+   A.  Toy2 has an alternate-allele frequency of zero, and toy8 has a frequency of one.
+3. Why is “alternate allele” not a synonym for “minor allele”? For a biallelic variant, the minor-allele frequency is the smaller of the reference- and alternate-allele frequencies.
+
+Well, in an earlier lesson, I took it on faith, since you wrote:
+
+> * `REF` means the allele recorded in the reference genome assembly. It is not necessarily the more common allele in the study sample or a population. `ALT` means an allele represented in the VCF that differs from `REF`; it is not necessarily the allele of scientific interest, the minor allele, an effect allele, or a risk allele.
+
+Now, as to this definition:  "For a biallelic variant, the minor-allele frequency is the smaller of the reference- and alternate-allele frequencies."  We can't use that definition with this data, for two reasons.  First, a sample count of five genotypes would not be remotely significant statistically (all the more so considering our missing data).  We also don't know which if any of these variants are biallelic, so even in a larger sample, wouldn't we have to determine that first for the definition you gave to apply?
+
+Comparing the output of "--freq" and "--freq count" to my table, it appears that I got both the counts and the frequencies more or less correct, but I didn't give my answers in significant digits, as I likely should have.
 
 ## AI Comments on alternate-allele-frequency answers
 

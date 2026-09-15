@@ -40,7 +40,7 @@ All four answers are correct. The interpretation of each person's genotype at `t
 
 There are two important refinements to the terminology in answer 1:
 
-* All eight rows in this particular teaching file are SNPs because each `REF` and `ALT` value is a single DNA base: `A`, `C`, `G`, or `T`. A real VCF can also contain insertions, deletions, multiallelic sites, and structural variants, so a VCF row is not necessarily a SNP.
+* All eight rows in this teaching file are **single-nucleotide variant (SNV) records** because each `REF` and `ALT` value is a single DNA base: `A`, `C`, `G`, or `T`. The earlier description of all eight as SNPs was too loose: “SNP” traditionally refers to an SNV occurring in at least 1% of a population, which this fictional five-sample dataset cannot establish. A real VCF can also contain insertions, deletions, multiallelic sites, and structural variants, so a VCF row is not necessarily an SNV or SNP.
 * `REF` means the allele recorded in the reference genome assembly. It is not necessarily the more common allele in the study sample or a population. `ALT` means an allele represented in the VCF that differs from `REF`; it is not necessarily the allele of scientific interest, the minor allele, an effect allele, or a risk allele.
 
 Answer 2 correctly reads `1/1` as two copies of the `ALT` allele, so Chen's genotype at `toy1` is `G/G`. Answer 3 correctly identifies Ada's and Chen's `./.` calls as missing at `toy4`.
@@ -312,3 +312,94 @@ The data now demonstrate why `ALT` and “minor” are different:
 * At `toy6`, `ALT` frequency is 0.60. The reference allele is therefore the less common allele in this sample, and sample MAF is 0.40.
 
 Finally, significant digits are not a problem in the table. These values are exact ratios of small integer counts: `3/8 = 0.375`, while `4/10 = 0.4`. Writing `0.40` instead of `0.4` can make a column visually consistent, but it does not make this small sample more precise or informative about a population.
+
+## Fifth checkpoint: sample MAF and PLINK filtering
+
+The previous checkpoint calculated the frequency of the allele labeled `ALT`.
+This checkpoint asks a different question: which of the two alleles is less
+frequent among the observed allele copies?
+
+For a biallelic record:
+
+```text
+reference frequency = 1 - alternate frequency
+sample MAF = min(reference frequency, alternate frequency)
+```
+
+Here, **sample MAF** means the minor-allele frequency calculated from these five
+fictional samples. It is an exact description of this dataset, but it is not a
+precise estimate of any population's MAF.
+
+For example, `toy1` has `ALT` frequency 0.40 and reference frequency 0.60. Its
+minor allele in this sample is therefore `G`, and its sample MAF is 0.40.
+
+Complete the remaining columns by hand, using the alternate frequencies already
+calculated:
+
+| Variant | `REF` | `ALT` | `ALT` frequency | `REF` frequency | Minor allele in this sample | Sample MAF |
+|---|---|---|---:|---:|---|---:|
+| `toy1` | A | G | 0.40 | 0.60 | G | 0.40 |
+| `toy2` | C | T | 0.00 |  |  |  |
+| `toy3` | G | A | 0.10 |  |  |  |
+| `toy4` | T | C | 0.50 |  |  |  |
+| `toy5` | A | C | 0.375 |  |  |  |
+| `toy6` | G | T | 0.60 |  |  |  |
+| `toy7` | C | G | 0.50 |  |  |  |
+| `toy8` | T | A | 1.00 |  |  |  |
+
+Two edge cases need careful language:
+
+* When both alleles have frequency 0.50, the MAF is 0.50, but there is no unique
+  minor allele because the alleles are tied.
+* When only one allele is observed, the sample MAF is 0. Calling the unobserved
+  allele “minor” is sometimes convenient, but the important result is that the
+  record is monomorphic in this sample.
+
+Before running the filter, answer these questions:
+
+1. At which variant is `REF`, rather than `ALT`, the minor allele in this sample?
+2. Why do `toy2` and `toy8` both have sample MAF 0 even though their alternate-
+   allele frequencies are opposites?
+3. Which variants do you predict PLINK will remove with a minimum MAF of 0.40?
+   Which variants lie exactly on the threshold?
+4. How many variants should remain?
+
+Run the filter on the original eight-variant dataset:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --maf 0.40 minor \
+  --make-pgen \
+  --out data/processed/tiny-maf-filtered
+```
+
+PLINK's `--maf` is a lower-bound filter: variants with a frequency **below** the
+specified threshold are removed, while variants exactly on the threshold remain.
+The `minor` mode is written explicitly here so the command says exactly which
+allele-frequency definition the lesson intends. For these biallelic records,
+PLINK's default `nonmajor` frequency gives the same result; that equivalence does
+not generally hold for multiallelic records.
+
+Inspect the retained variants and the log:
+
+```sh
+cat data/processed/tiny-maf-filtered.pvar
+cat data/processed/tiny-maf-filtered.log
+```
+
+Compare the retained IDs and PLINK's variant counts with your predictions. As in
+the earlier missingness exercise, `0.40` is an illustrative threshold chosen to
+make the boundary behavior visible. It is not a recommended research threshold.
+In real work, sample selection, missingness, ancestry composition, and prior
+filtering can all change empirical allele frequencies. When a pipeline must use
+a fixed external frequency estimate, PLINK provides `--read-freq`; we will defer
+that option until a larger public dataset makes the distinction useful.
+
+## Checkpoint -- Student Answers on sample MAF
+
+<!-- Complete the table, answer the four questions, and compare the prediction with the filtered .pvar and .log. -->
+
+## AI Comments on sample-MAF answers
+
+<!-- Add feedback after the checkpoint is completed. -->

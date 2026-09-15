@@ -483,3 +483,189 @@ The main lesson is that `REF`/`ALT` labels remain fixed properties of the VCF
 record, while major/minor status is calculated from allele observations in a
 particular set of samples. Changing the samples can change major/minor status
 without changing `REF` or `ALT`.
+
+## Sixth checkpoint: observed genotype frequencies and Hardy-Weinberg equilibrium
+
+### From allele frequencies to genotype frequencies
+
+An allele frequency counts individual chromosome copies. A genotype frequency
+counts people (or, more generally, diploid samples) with each genotype. These
+use different denominators.
+
+At a biallelic autosomal locus, let:
+
+* `p` be the frequency of the `REF` allele;
+* `q` be the frequency of the `ALT` allele; and
+* `N` be the number of samples with nonmissing diploid genotypes.
+
+Because this record has two represented alleles, `p + q = 1`. The three observed
+genotype frequencies are:
+
+```text
+observed REF/REF frequency = REF/REF genotype count / N
+observed REF/ALT frequency = REF/ALT genotype count / N
+observed ALT/ALT frequency = ALT/ALT genotype count / N
+```
+
+For `toy1`, the five genotype calls are `0/0`, `0/1`, `1/1`, `0/0`, and
+`0/1`. The observed genotype counts are therefore 2, 2, and 1, and the observed
+genotype frequencies are 0.40, 0.40, and 0.20. These three frequencies sum to 1.
+
+This is separate from the allele-frequency calculation. Those same genotypes
+contain six `REF` copies and four `ALT` copies, so `p = 0.60` and `q = 0.40`.
+
+### What Hardy–Weinberg equilibrium means
+
+Hardy–Weinberg equilibrium (HWE) is a population-genetic null model connecting
+allele frequencies to expected genotype frequencies. If chromosome copies unite
+at random with respect to this locus, a `REF` allele is selected with probability
+`p` and an `ALT` allele with probability `q`. The expected genotype frequencies
+are then:
+
+| Genotype | Expected frequency | Reason |
+|---|---:|---|
+| `REF/REF` | `p²` | `p × p` |
+| `REF/ALT` | `2pq` | `p × q` or `q × p` |
+| `ALT/ALT` | `q²` | `q × q` |
+
+The expression `(p + q)² = p² + 2pq + q² = 1` shows why these expected
+frequencies sum to 1. Expected genotype **counts** are obtained by multiplying
+each expected frequency by `N`. Expected counts can be fractional because they
+are model averages, not observed people.
+
+In a real dataset, the population values of `p` and `q` are usually unknown, so
+we estimate them from the observed allele copies. The HWE comparison is therefore
+not an independent prediction of the allele frequency. It asks whether the
+observed allele copies are paired into homozygous and heterozygous genotypes in a
+way compatible with the model.
+
+For the `toy1` allele frequencies, HWE gives:
+
+| Quantity | `REF/REF` | `REF/ALT` | `ALT/ALT` |
+|---|---:|---:|---:|
+| Observed count | 2 | 2 | 1 |
+| Observed frequency | 0.40 | 0.40 | 0.20 |
+| HWE expected frequency | `0.60² = 0.36` | `2 × 0.60 × 0.40 = 0.48` | `0.40² = 0.16` |
+| HWE expected count | 1.80 | 2.40 | 0.80 |
+
+HWE does **not** mean that the two alleles must each have frequency 0.50, nor
+does it mean that observed genotype counts must equal fractional expected counts
+exactly. It supplies a probability model for variation due to sampling.
+
+The word *equilibrium* refers to the result that these allele and genotype
+proportions remain stable across generations when the model's conditions continue
+to hold; it does not imply that every locus has equal allele frequencies.
+
+The classical model assumes a very large, randomly mating population with
+Mendelian segregation and no locus-specific effects from selection, mutation,
+or migration. In data analysis, we also need the sampled genotypes to behave
+roughly like unrelated observations from one population and to have been called
+accurately. These are modeling conditions, not facts guaranteed by a VCF.
+
+### Why observed genotypes can depart from HWE
+
+A departure from HWE has several possible explanations:
+
+* ordinary sampling variation;
+* genotype-calling or allele-coding errors;
+* ancestry or population substructure, including combining groups with different
+  allele frequencies;
+* related samples, inbreeding, or other nonrandom mating;
+* natural selection or a real association in an ascertained disease sample; or
+* an inappropriate diploid model, such as an unrecognized copy-number change.
+
+This is why an HWE test is a useful QC diagnostic but not a diagnosis. A small
+p-value says that the observed genotype configuration would be unusual under the
+test's HWE null model. It does not identify the cause, give the probability that
+HWE is true, or prove that a variant is technically bad. In case-control studies,
+analysts often examine controls separately because genuine disease association
+can produce deviation among cases. Population structure must also be considered
+before assigning a single HWE expectation to a combined sample.
+
+Sample size matters in both directions. With very large datasets, small and
+possibly unimportant departures can produce tiny p-values. With only five
+fictional samples, the possible genotype tables and exact-test p-values are very
+coarse, so this exercise cannot support scientific inference or a defensible HWE
+filtering threshold.
+
+### Hand checkpoint: `toy7`
+
+Use the original VCF, including all samples with nonmissing calls at `toy7`, to
+complete this table. Do not use the MAF-filtered files to do the arithmetic.
+
+| Quantity | `REF/REF` | `REF/ALT` | `ALT/ALT` |
+|---|---:|---:|---:|
+| Observed count |  |  |  |
+| Observed frequency |  |  |  |
+| HWE expected frequency |  |  |  |
+| HWE expected count |  |  |  |
+
+Then answer:
+
+1. How many nonmissing genotypes contribute to `N` at `toy7`, and what are `p`
+   and `q`?
+2. Which genotype class shows the largest difference between its observed and
+   expected count?
+3. Why are fractional expected counts meaningful even though a fraction of a
+   person cannot be observed?
+
+### Compare with PLINK 2
+
+First generate a direct genotype-count report from the original fileset:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --geno-counts \
+  --out data/processed/tiny-genotype-counts
+```
+
+The resulting `tiny-genotype-counts.gcount` includes `HOM_REF_CT`,
+`HET_REF_ALT_CTS`, `TWO_ALT_GENO_CTS`, and `MISSING_CT`. Check the `toy1` and
+`toy7` rows against the hand counts.
+
+Next generate the HWE report:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --hardy \
+  --out data/processed/tiny-hwe
+```
+
+`--hardy` reports results; it does not filter or create a new genotype fileset.
+The resulting `tiny-hwe.hardy` contains, for these biallelic autosomal records:
+
+* `A1` and `AX`: the tested allele and the other allele;
+* `HOM_A1_CT`, `HET_A1_CT`, and `TWO_AX_CT`: the three observed genotype counts;
+* `O(HET_A1)`: the observed heterozygote frequency;
+* `E(HET_A1)`: the HWE-expected heterozygote frequency, `2pq`; and
+* `P`: PLINK's HWE exact-test p-value.
+
+PLINK uses an exact test rather than simply measuring the numerical gap between
+observed and expected counts. Exact-test p-values are discrete in a tiny sample;
+for example, a p-value of 1 does not mean the observed and expected proportions
+are identical. All five fictional samples are founders, so PLINK's default of
+using founders for this report includes everyone here.
+
+Inspect the two reports and answer:
+
+4. Do PLINK's genotype counts agree with the hand calculations for `toy1` and
+   `toy7`?
+5. For `toy7`, how do `O(HET_A1)` and `E(HET_A1)` compare? Does its p-value give
+   enough evidence to identify why they differ?
+6. Why would applying `--hwe` as a research filter to this five-sample teaching
+   dataset be unjustified?
+
+For reference, PLINK's [`--hardy` documentation](https://www.cog-genomics.org/plink/2.0/basic_stats#hardy)
+describes the report, and Wigginton, Cutler, and Abecasis (2005),
+[*A Note on Exact Tests of Hardy-Weinberg Equilibrium*](https://doi.org/10.1086/429864),
+explains the exact-test approach used for biallelic variants.
+
+## Checkpoint -- Student Answers on HWE
+
+<!-- Complete the toy7 table, answer questions 1–6, and compare the two PLINK reports with the hand calculations. -->
+
+## AI Comments on HWE answers
+
+<!-- Add feedback after the checkpoint is completed. -->

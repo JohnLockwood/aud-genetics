@@ -4,7 +4,7 @@ This is the running index for tutorial, research, and design notes. New entries 
 
 | Date | Note | Topic | Outcome |
 |---|---|---|---|
-| 2026-09-15 | [Minor-allele-frequency lesson](2026-09-15-minor-allele-frequency-lesson.md) | Sample MAF and PLINK's `--maf` filter | Added the fifth checkpoint with hand calculations and a threshold-boundary exercise |
+| 2026-09-15 | [Minor-allele-frequency lesson](2026-09-15-minor-allele-frequency-lesson.md) | Sample MAF and PLINK's `--maf` filter | Completed and reviewed the hand calculations and threshold-boundary exercise |
 | 2026-09-15 | [SNP and allele terminology](2026-09-15-snp-allele-terminology.md) | Sites, alleles, SNVs, SNPs, independent variant descriptors, and foundations checkpoint | Corrected loose SNP usage; clarified category relationships and the autosomal/diploid distinction |
 | 2026-09-11 | [Alternate-allele-frequency checkpoint](2026-09-11-allele-frequency.md) | Allele counts, observed frequencies, and MAF interpretation | Calculations confirmed; sample MAF distinguished from population inference |
 | 2026-09-11 | [Missingness-filtering checkpoint](2026-09-11-missingness-filtering.md) | Applying `--geno` and `--mind` independently | Predictions confirmed; threshold boundary and filter direction understood |

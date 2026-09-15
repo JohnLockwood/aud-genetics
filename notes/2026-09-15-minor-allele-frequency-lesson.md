@@ -52,5 +52,23 @@ dataset is introduced.
 
 ## Next lesson
 
-Complete the sample-MAF table, predict the result of `--maf 0.40 minor`, run the
-filter, and compare the retained variant IDs and log counts with the prediction.
+Introduce observed genotype frequencies and Hardy–Weinberg equilibrium while
+keeping descriptive sample counts separate from population-model expectations.
+
+## Follow-up: checkpoint reviewed
+
+The project owner completed the MAF table and answered the interpretation
+questions in place in the lesson. The PLINK run matched the filtering prediction:
+`toy2`, `toy3`, `toy5`, and `toy8` were removed, while `toy1`, `toy4`, `toy6`,
+and `toy7` remained. The log reported four removals and four retained variants.
+
+The review corrected one allele-label error. At `toy6`, the reference allele G
+has frequency 0.40 and is the minor allele; alternate allele T has frequency
+0.60. Consequently, the reference allele is lower-frequency at both `toy6` and
+`toy8`, although at monomorphic `toy8` the phrase “unobserved reference allele”
+is clearer than assigning a minor-allele identity. The review also clarified
+that `toy1` through `toy8` are variants, while Ada through Eli are samples, and
+that major/minor status is calculated per variant across the selected samples.
+The README's feedback now includes the full corrected table and clarifies that
+`--maf ... --make-pgen` writes a filtered fileset rather than a per-variant MAF
+report; the table is derived from the earlier allele-frequency report.

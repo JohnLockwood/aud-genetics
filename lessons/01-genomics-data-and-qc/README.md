@@ -51,6 +51,9 @@ The calculation in answer 4 is correct: the alternate-allele counts at `toy1` ar
 
 Once the hand interpretation is clear, use PLINK 2 to import the VCF and create its native files in a disposable or ignored output directory:
 
+All commands in this lesson assume that the current working directory is the
+repository root.
+
 ```sh
 plink2 \
   --vcf lessons/01-genomics-data-and-qc/tiny-genotypes.vcf \
@@ -339,13 +342,13 @@ calculated:
 | Variant | `REF` | `ALT` | `ALT` frequency | `REF` frequency | Minor allele in this sample | Sample MAF |
 |---|---|---|---:|---:|---|---:|
 | `toy1` | A | G | 0.40 | 0.60 | G | 0.40 |
-| `toy2` | C | T | 0.00 |  |  |  |
-| `toy3` | G | A | 0.10 |  |  |  |
-| `toy4` | T | C | 0.50 |  |  |  |
-| `toy5` | A | C | 0.375 |  |  |  |
-| `toy6` | G | T | 0.60 |  |  |  |
-| `toy7` | C | G | 0.50 |  |  |  |
-| `toy8` | T | A | 1.00 |  |  |  |
+| `toy2` | C | T | 0.00 | 1.0 | T | 0.0 |
+| `toy3` | G | A | 0.10 | 0.90 | A | 0.10 |
+| `toy4` | T | C | 0.50 | 0.50 | NA | 0.50 |
+| `toy5` | A | C | 0.375 | 0.625  | C | 0.375 |
+| `toy6` | G | T | 0.60 | 0.40 | T | 0.40 |
+| `toy7` | C | G | 0.50 | 0.50  | NA  | 0.50  |
+| `toy8` | T | A | 1.00 | 0 | T | 0 |
 
 Two edge cases need careful language:
 
@@ -357,14 +360,28 @@ Two edge cases need careful language:
 
 Before running the filter, answer these questions:
 
-1. At which variant is `REF`, rather than `ALT`, the minor allele in this sample?
+1. At which variants is `REF`, rather than `ALT`, the lower-frequency allele in
+   this sample?
 2. Why do `toy2` and `toy8` both have sample MAF 0 even though their alternate-
    allele frequencies are opposites?
 3. Which variants do you predict PLINK will remove with a minimum MAF of 0.40?
    Which variants lie exactly on the threshold?
 4. How many variants should remain?
 
+## User's answers to question:
+
+1. REF is the minor allele in sample toy8.  (Having REF and ALT frequencies reversed with respect to the variant columns made this a bit more challenging than it needed to be, but perhaps when I see the --maf output it'll make more sense.
+
+2.  There is no dependency between rows here.  The REF frequency is the minor allele in toy8 with a frequency of zero for this row, in row, the alternate variant is the minor allele, also with a frequency of zero for that row.  This means that what's minor for a given sample is independent of whether it's the reference or the alt allele.
+
+3. Toy1 and toy six are exactly on the threshold, and will remain (as discussed below).  Toy2, toy3, toy5, and toy8 are below the threshold and will be removed.
+
 Run the filter on the original eight-variant dataset:
+
+This command uses the PLINK fileset created during the earlier import, not the
+VCF directly. The prefix after `--pfile` refers collectively to
+`tiny-genotypes.pgen`, `tiny-genotypes.pvar`, and `tiny-genotypes.psam` in
+`data/processed/`.
 
 ```sh
 plink2 \
@@ -400,6 +417,69 @@ that option until a larger public dataset makes the distinction useful.
 
 <!-- Complete the table, answer the four questions, and compare the prediction with the filtered .pvar and .log. -->
 
+Done, see above.  Predictions seem to match.
+
 ## AI Comments on sample-MAF answers
 
-<!-- Add feedback after the checkpoint is completed. -->
+The frequency calculations and the PLINK filtering prediction are almost entirely
+correct. The generated `.pvar` and `.log` confirm that PLINK removed four
+variants and retained `toy1`, `toy4`, `toy6`, and `toy7`.
+
+There is one error in the completed table: at `toy6`, `ALT` allele T has
+frequency 0.60 and `REF` allele G has frequency 0.40. The minor allele is
+therefore **G**, not T. The sample MAF of 0.40 is correct.
+
+Here is the corrected table. “Unobserved” is included for the two monomorphic
+records, and “tie” is used where neither allele is uniquely minor.
+
+| Variant | `REF` | `ALT` | `ALT` frequency | `REF` frequency | Minor/lower-frequency allele | Sample MAF |
+|---|---|---|---:|---:|---|---:|
+| `toy1` | A | G | 0.40 | 0.60 | G | 0.40 |
+| `toy2` | C | T | 0.00 | 1.00 | T (unobserved) | 0.00 |
+| `toy3` | G | A | 0.10 | 0.90 | A | 0.10 |
+| `toy4` | T | C | 0.50 | 0.50 | Tie | 0.50 |
+| `toy5` | A | C | 0.375 | 0.625 | C | 0.375 |
+| `toy6` | G | T | 0.60 | 0.40 | G | 0.40 |
+| `toy7` | C | G | 0.50 | 0.50 | Tie | 0.50 |
+| `toy8` | T | A | 1.00 | 0.00 | T (unobserved) | 0.00 |
+
+The filter command did not generate this table. `--maf 0.40 minor` calculated
+the relevant frequencies internally and removed entire variant records below
+the threshold; `--make-pgen` then wrote the retained records to a new
+`.pgen`/`.pvar`/`.psam` fileset. The output `.pvar` shows which records survived,
+and the log reports the counts, but neither is a per-variant MAF report. The
+earlier `.afreq` report provides the alternate-allele frequencies from which this
+biallelic table is derived.
+
+That correction also changes answer 1: `REF` is the lower-frequency allele at
+both **`toy6` and `toy8`**. The original question incorrectly said “At which
+variant” in the singular, so it invited a one-row answer; it now says “Which
+variants.” At `toy6`, G is observed four times and is genuinely less frequent
+than T in this sample. At `toy8`, reference allele T is not observed at all.
+Calling T the “minor allele” is arithmetically understandable, but “unobserved
+reference allele” is more informative because the variant is monomorphic in
+these samples.
+
+The `NA` entries for `toy4` and `toy7` communicate the right idea. “Tie” or
+“neither” would be more explicit: both alleles have frequency 0.50, so the MAF
+is 0.50 without a uniquely identifiable minor allele.
+
+Answer 2 has the correct underlying idea, with two terminology corrections:
+
+* `toy2` and `toy8` are **variants**, not samples; Ada through Eli are the
+  samples.
+* MAF is calculated separately for each variant across its observed sample
+  genotypes. At `toy2`, ALT allele T is unobserved; at `toy8`, REF allele T is
+  unobserved. Thus each variant has allele frequencies 0 and 1, and each has
+  sample MAF 0, regardless of which VCF label is attached to the zero-frequency
+  allele.
+
+Answer 3 is correct. `toy2`, `toy3`, `toy5`, and `toy8` fall below 0.40 and are
+removed. `toy1` and `toy6` lie exactly on the threshold and remain; `toy4` and
+`toy7` are above it and also remain. This supplies the answer to question 4:
+**four variants remain**.
+
+The main lesson is that `REF`/`ALT` labels remain fixed properties of the VCF
+record, while major/minor status is calculated from allele observations in a
+particular set of samples. Changing the samples can change major/minor status
+without changing `REF` or `ALT`.

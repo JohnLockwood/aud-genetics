@@ -595,10 +595,10 @@ complete this table. Do not use the MAF-filtered files to do the arithmetic.
 
 | Quantity | `REF/REF` | `REF/ALT` | `ALT/ALT` |
 |---|---:|---:|---:|
-| Observed count |  |  |  |
-| Observed frequency |  |  |  |
-| HWE expected frequency |  |  |  |
-| HWE expected count |  |  |  |
+| Observed count | 0 | 4 | 0 |
+| Observed frequency | 0 | 1 | 0 |
+| HWE expected frequency | .5ˆ2 = .25 | 2 * .5 * .5 = .5 | .5ˆ2 = .25 |
+| HWE expected count | 2 | 4 | 2 |
 
 Then answer:
 
@@ -666,6 +666,112 @@ explains the exact-test approach used for biallelic variants.
 
 <!-- Complete the toy7 table, answer questions 1–6, and compare the two PLINK reports with the hand calculations. -->
 
+### Toy7 Table:
+
+| Quantity | `REF/REF` | `REF/ALT` | `ALT/ALT` |
+|---|---:|---:|---:|
+| Observed count | 0 | 4 | 0 |
+| Observed frequency | 0 | 1 | 0 |
+| HWE expected frequency | .5ˆ2 = .25 | 2 * .5 * .5 = .5 | .5ˆ2 = .25 |
+| HWE expected count | 1 | 2 | 1 |
+
+### Answers
+
+1. How many nonmissing genotypes contribute to `N` at `toy7`, and what are `p`
+   and `q`?
+
+There are eight non-missing genotypes.  N = 8.  p = 4 and q = 4.
+
+2. Which genotype class shows the largest difference between its observed and
+   expected count?
+
+In absolute terms the value for REF/ALT is off by 2 (4-2), so it's the answer.  (The values of REF/REF and ALT/ALT are only off by one, i.e. 1-0).
+
+3. Why are fractional expected counts meaningful even though a fraction of a
+   person cannot be observed?
+
+From the point of view of the theoretical definition, they're given by the formula for HWE (and by binomial expansion of (p + q)ˆ2, cf https://en.wikipedia.org/wiki/Hardy%E2%80%93Weinberg_principle).  They're always an estimated value in any case, to which an actual value might more or less conform.  To be sure, fractional real persons don't exist, but in population estimates they're quite common.  "89% of people agree with me on this." :)
+
+
+4. Do PLINK's genotype counts agree with the hand calculations for `toy1` and
+   `toy7`?
+
+Yes, the counts themselves appear to agree.
+
+5. For `toy7`, how do `O(HET_A1)` and `E(HET_A1)` compare? Does its p-value give
+   enough evidence to identify why they differ?
+
+Well, of course they're off by a lot (1.0 vs. .5), but the values agree with my observed vs. calculated values.  The p-value is quite low, which I take to mean "there is evidence against HWE" or that the sample is inconsistent with HWE.  But given the small sample size, this is definitely not surprising.
+
+6. Why would applying `--hwe` as a research filter to this five-sample teaching
+   dataset be unjustified?
+
+Because, as we saw in the case of toy7, for a small sample size, differences between observed and expected values don't really tell us much if anything at all.
+
 ## AI Comments on HWE answers
 
-<!-- Add feedback after the checkpoint is completed. -->
+The main observed and expected genotype calculations are understood, and the
+second `toy7` table under the checkpoint answers is correct:
+
+| Quantity | `REF/REF` | `REF/ALT` | `ALT/ALT` |
+|---|---:|---:|---:|
+| Observed count | 0 | 4 | 0 |
+| Observed frequency | 0 | 1 | 0 |
+| HWE expected frequency | 0.25 | 0.50 | 0.25 |
+| HWE expected count | 1 | 2 | 1 |
+
+There are two related corrections to answer 1. At `toy7`, **four nonmissing
+genotypes** contribute to `N`, so `N = 4`. Those four diploid genotypes contain
+**eight observed allele copies**: four `REF` copies and four `ALT` copies.
+Consequently, `p` and `q` are frequencies rather than counts:
+
+```text
+p = 4 / 8 = 0.5
+q = 4 / 8 = 0.5
+```
+
+This denominator distinction also explains the incorrect `2, 4, 2` expected
+counts entered in the earlier hand-checkpoint table. Those values multiply the
+expected genotype frequencies by eight allele copies. HWE expected genotype
+counts must instead use `N = 4` people: `4 × (0.25, 0.50, 0.25) = (1, 2, 1)`.
+The later table correctly makes that calculation.
+
+Answer 2 is correct. The heterozygote count differs from its HWE expectation by
+`|4 - 2| = 2`, while each homozygote count differs by 1.
+
+Answer 3 has the right idea. An expected count is a probability-weighted average
+over repeated samples generated under the model. If many samples of four people
+were drawn under HWE with `p = q = 0.5`, the average counts would tend toward
+`1, 2, 1`, even though every individual sample contains whole people. Expected
+counts need not be possible observed counts; for other values of `p`, `q`, or
+`N`, they can be fractional.
+
+Answer 4 is correct. The genotype-count report gives `2, 2, 1` for `toy1` and
+`0, 4, 0` for `toy7`. It also reports one missing call at `toy7`, confirming why
+only four genotypes contribute. The command was run with the output prefix
+`tiny-genotypes-counts`, so the generated filename differs slightly from the
+lesson's suggested `tiny-genotype-counts`; this does not affect the results.
+
+For answer 5, the descriptive comparison is correct: at `toy7`, the observed
+heterozygote frequency is 1.0 and the HWE-expected value is 0.5. The p-value
+interpretation needs correction. PLINK reports `P = 0.314286`, which is **not a
+small p-value by conventional standards** and does not provide evidence to reject
+HWE. The exact test recognizes that an apparently large proportional difference
+can readily occur when only four genotypes are observed. Even a genuinely small
+p-value would indicate incompatibility with the HWE null model; it would not
+identify whether the cause was chance, genotyping error, population structure,
+relatedness, selection, or something else.
+
+Answer 6 is correct in direction. The stronger formulation is that this synthetic
+dataset has no population-sampling design, only four or five observed genotypes
+per variant, highly discrete p-values, and almost no power to detect departures.
+Any `--hwe` threshold chosen here would be arbitrary rather than a defensible
+research QC rule.
+
+The key distinction to retain is:
+
+```text
+N = number of nonmissing diploid genotypes (people)
+2N = number of observed allele copies
+p and q = allele frequencies, not allele counts
+```

@@ -49,6 +49,21 @@ relationships are fictional. No sample exclusion threshold is proposed.
 
 ## Next lesson
 
-Complete the observed-count table, generate the `.het` report, verify one `F`
-calculation, and explain why the extreme-looking values do not support sample
-diagnoses or exclusions.
+Assemble the Phase 1 capstone: an ordered QC run and sample/variant attrition
+table that separates illustrative thresholds from defensible research choices.
+
+## Follow-up: checkpoint reviewed
+
+The project owner completed the observed-count table correctly for all five
+samples. The reported observed heterozygous proportions, PLINK comparison, Ada
+`F` calculation, and identification of Ben's negative and Chen's positive
+extremes were all correct.
+
+The review refined two interpretations. First, more samples are necessary for
+better allele-frequency estimates but are not sufficient for a defensible
+heterozygosity screen; many suitable, approximately independent variants,
+population-aware comparison, and other QC evidence are also required. Second,
+`--hardy` evaluates one variant across samples with an HWE test, while `--het`
+evaluates one sample across variants with an observed-versus-expected
+heterozygosity summary. Neither report supplies a universal standalone cutoff or
+a diagnosis.

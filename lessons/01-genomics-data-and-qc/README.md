@@ -926,11 +926,6 @@ equilibrium.
 
 ## Checkpoint -- Student Answers on per-sample heterozygosity
 
-<!-- Complete the table, answer questions 1–8, and compare the hand counts with tiny-heterozygosity.het. -->
-
-
-Complete the other rows directly from the VCF:
-
 | Sample | `O(HOM)` | `O(HET)` | Missing among the six variants | `OBS_CT` | Observed heterozygous proportion |
 |---|---:|---:|---:|---:|---:|
 | Ada | 3 | 2 | 1 | 5 | 0.40 |
@@ -1002,4 +997,57 @@ In both cases we are summarizing either rows or columns, in a larger sample we w
 
 ## AI Comments on per-sample heterozygosity answers
 
-<!-- Add feedback after the checkpoint is completed. -->
+The hand table is correct for all five samples, including the missing-call and
+`OBS_CT` columns. The observed heterozygous proportions are also correct: Ben is
+highest at `5/6 ≈ 0.833`, and Chen is lowest at `0/4 = 0`.
+
+Answer 2 is correct. After PLINK skips the two monomorphic variants, six
+polymorphic rows remain available. For each sample:
+
+```text
+OBS_CT = 6 - missing calls among those six variants
+```
+
+Answer 3 has the right idea. `toy2` and `toy8` still represent `REF` and `ALT`
+alleles in the VCF, but only one of those alleles is observed in this sample.
+Every nonmissing call at each record is therefore homozygous, the estimated
+heterozygote probability is zero, and the records cannot distinguish samples by
+heterozygosity. PLINK consequently omits them from this report.
+
+Answers 4 and 5 are correct. PLINK's observed counts agree with every hand-table
+row, and Ada's calculation reproduces the reported value apart from normal
+rounding:
+
+```text
+F = 1 - 2 / 2.37381 = 0.1574726...
+```
+
+Answer 6 is also correct. Chen has `O(HET) = 0`, below `E(HET) = 1.80238`, so
+`F = 1` is the most positive value. Ben has `O(HET) = 5`, above
+`E(HET) = 2.97381`, so `F = -0.681345` is the most negative value. The signs
+describe heterozygote deficiency and excess, respectively; they do not establish
+their causes.
+
+Answer 7 reaches the correct conclusion, with an important addition: increasing
+the number of samples is necessary for credible allele-frequency estimates, but
+it is not sufficient by itself. A defensible sample-level heterozygosity check
+also needs many well-called autosomal variants, approximate linkage equilibrium,
+appropriate ancestry or population grouping, and review alongside missingness,
+batch, and other QC information. Here we have only five fictional samples and
+six analyzed variants. The plain-`--het` error catches the first problem, while
+the lesson's design tells us about the second.
+
+Answer 8 correctly recognizes that the two reports summarize opposite directions
+of the genotype matrix. More precisely:
+
+| Report | Unit of each row | Comparison | Typical QC question |
+|---|---|---|---|
+| `--hardy` | One variant across samples | Observed genotype configuration versus the HWE null model | Does this variant show unusual genotype proportions? |
+| `--het` | One sample across variants | Observed versus allele-frequency-based expected heterozygosity | Is this sample unusual relative to appropriately comparable samples? |
+
+For HWE, “close enough” is evaluated with a per-variant statistical test whose
+interpretation depends on sample size and study design. For `--het`, researchers
+usually inspect the distribution of `F` within suitable sample groups and
+investigate outliers; they do not require every sample to satisfy a universal
+distance from zero. Both are diagnostic signals that require context rather than
+standalone verdicts.

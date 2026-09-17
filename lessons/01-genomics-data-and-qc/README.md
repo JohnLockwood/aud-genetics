@@ -775,3 +775,231 @@ N = number of nonmissing diploid genotypes (people)
 2N = number of observed allele copies
 p and q = allele frequencies, not allele counts
 ```
+
+## Seventh checkpoint: per-sample heterozygosity
+
+### A different direction through the genotype matrix
+
+The HWE checkpoint examined one **variant** at a time across all samples. A
+per-sample heterozygosity check turns the genotype matrix the other way: for one
+**sample**, it counts homozygous and heterozygous calls across many variants.
+
+```text
+HWE report:           one row per variant, summarized across samples
+--het report:         one row per sample, summarized across variants
+```
+
+For one sample at one biallelic diploid variant:
+
+| Genotype | Classification |
+|---|---|
+| `0/0` | Homozygous |
+| `0/1` | Heterozygous |
+| `1/1` | Homozygous |
+| `./.` | Missing; contributes to neither count |
+
+Both `0/0` and `1/1` are homozygous. The `REF`/`ALT` labels do not affect this
+classification.
+
+### Observed and expected heterozygosity
+
+For each sample, PLINK reports the observed number of homozygous and
+heterozygous calls across the analyzed autosomal variants. At variant `j`, with
+allele frequencies `p_j` and `q_j`, HWE predicts heterozygote frequency
+`2 p_j q_j`. Adding those per-variant probabilities gives the expected number of
+heterozygous calls for a sample:
+
+```text
+E(HET) = sum of 2 p_j q_j across the sample's analyzed, nonmissing variants
+O(HET) = the sample's observed heterozygous-call count
+```
+
+The expected count is not generally `OBS_CT` multiplied by one overall allele
+frequency. Every variant can have different allele frequencies, and samples with
+different missing calls can be evaluated over slightly different variant sets.
+
+PLINK summarizes the comparison with a method-of-moments inbreeding coefficient:
+
+```text
+F = 1 - O(HET) / E(HET)
+```
+
+Interpret the sign before interpreting the magnitude:
+
+* `F` near zero means observed and expected heterozygosity are similar.
+* Positive `F` means fewer heterozygous calls, and therefore more homozygous
+  calls, than expected.
+* Negative `F` means more heterozygous calls than expected.
+
+Despite its name, this estimate is not by itself proof of biological inbreeding.
+A positive value can also reflect ancestry mismatch, population structure,
+genotyping artifacts, or the variants used in the calculation. A strongly
+negative value can occur with contamination or other technical problems, but it
+also requires follow-up rather than an automatic diagnosis.
+
+In a research QC workflow, analysts usually calculate heterozygosity from a large
+set of well-called autosomal variants with adequate MAF estimates and approximate
+linkage equilibrium. Linkage-disequilibrium pruning prevents correlated blocks
+from receiving disproportionate weight. Samples are compared within appropriate
+ancestry or population groups, often alongside missingness and batch information.
+There is no universal `F` cutoff that is suitable for every dataset.
+
+### Why this tiny dataset needs a special mode
+
+PLINK's ordinary `--het` calculation requires credible allele-frequency
+estimates. With only five samples, the installed PLINK build intentionally stops
+and recommends frequencies from a larger, similar population supplied with
+`--read-freq`. That is the scientifically appropriate warning.
+
+For this arithmetic exercise only, we will use the `small-sample` modifier. It
+forces PLINK to estimate frequencies from the founders in the immediate dataset
+and applies its finite-sample correction. This lets us inspect the report, but it
+does not make five fictional samples suitable for heterozygosity QC. Consequently,
+the PLINK `E(HET)` values will include that correction and need not equal a naive
+hand-sum of uncorrected `2pq` values.
+
+PLINK also skips `toy2` and `toy8` because they are monomorphic in this sample.
+The hand checkpoint therefore uses the six polymorphic variants `toy1`, `toy3`,
+`toy4`, `toy5`, `toy6`, and `toy7`.
+
+### Hand checkpoint: observed counts
+
+Ada is the worked example. Among the six analyzed variants, Ada has three
+homozygous calls (`toy1`, `toy5`, and `toy6`), two heterozygous calls (`toy3`
+and `toy7`), and one missing call (`toy4`). Therefore, Ada's `OBS_CT` is 5 and
+her observed heterozygous proportion is `2 / 5 = 0.40`.
+
+Complete the other rows directly from the VCF:
+
+| Sample | `O(HOM)` | `O(HET)` | Missing among the six variants | `OBS_CT` | Observed heterozygous proportion |
+|---|---:|---:|---:|---:|---:|
+| Ada | 3 | 2 | 1 | 5 | 0.40 |
+| Ben |  |  |  |  |  |
+| Chen |  |  |  |  |  |
+| Dia |  |  |  |  |  |
+| Eli |  |  |  |  |  |
+
+Before running PLINK, answer:
+
+1. Which sample has the largest observed heterozygous proportion? Which has the
+   smallest?
+2. Why do the samples not all have the same `OBS_CT`?
+3. Why do `toy2` and `toy8` provide no information about whether a sample has
+   excess or deficient heterozygosity in this dataset?
+
+### Generate and interpret PLINK's report
+
+Run the explicitly labeled teaching calculation from the repository root:
+
+```sh
+plink2 \
+  --pfile data/processed/tiny-genotypes \
+  --het small-sample cols=hom,het,nobs,f \
+  --out data/processed/tiny-heterozygosity
+```
+
+This writes `tiny-heterozygosity.het`. `IID` is always included; the requested
+columns are:
+
+* `O(HOM)` and `E(HOM)`: observed and expected homozygous-call counts;
+* `O(HET)` and `E(HET)`: observed and expected heterozygous-call counts;
+* `OBS_CT`: analyzed nonmissing genotype count; and
+* `F`: `1 - O(HET) / E(HET)`.
+
+Read the `.het` file and the log, then answer:
+
+4. Do `O(HOM)`, `O(HET)`, and `OBS_CT` agree with the hand table for all five
+   samples?
+5. Verify Ada's reported `F` by substituting Ada's `O(HET)` and `E(HET)` into
+   the formula above.
+6. Which sample has the most negative `F`, and which has the most positive `F`?
+   Relate each sign to its observed-versus-expected heterozygosity.
+7. Why would it be unjustified to label either sample contaminated, inbred, or a
+   QC failure from this report?
+8. In your own words, explain the difference between the previous per-variant
+   HWE report and this per-sample heterozygosity report.
+
+The [PLINK 2 `--het` documentation](https://www.cog-genomics.org/plink/2.0/basic_stats#inbreeding)
+describes the calculation, its allele-frequency requirements, the `small-sample`
+modifier, and the recommendation to use variants in approximate HWE and linkage
+equilibrium.
+
+## Checkpoint -- Student Answers on per-sample heterozygosity
+
+<!-- Complete the table, answer questions 1–8, and compare the hand counts with tiny-heterozygosity.het. -->
+
+
+Complete the other rows directly from the VCF:
+
+| Sample | `O(HOM)` | `O(HET)` | Missing among the six variants | `OBS_CT` | Observed heterozygous proportion |
+|---|---:|---:|---:|---:|---:|
+| Ada | 3 | 2 | 1 | 5 | 0.40 |
+| Ben | 1 | 5 | 0 | 6 | 0.833 |
+| Chen | 4 | 0 | 2 | 4 | 0 |
+| Dia | 4 | 2 | 0 | 6 | 0.333 |
+| Eli | 3 | 2 | 1 | 5 | 0.40 |
+
+
+1. Which sample has the largest observed heterozygous proportion? Which has the
+   smallest?
+
+Ben has the largest, at 0.833 (5/6).  Chen has the smallest, at 0.
+
+2. Why do the samples not all have the same `OBS_CT`?
+
+Because we've excluded 2 of eight rows, there are six rows left (n_rows).  The OBS_CT depends on the number of missing calls, as follows: OBS_CT = n_rows - n_calls_missing.
+
+3. Why do `toy2` and `toy8` provide no information about whether a sample has
+   excess or deficient heterozygosity in this dataset?
+
+For --het, plink2 ignores rows that are monomorphic in the sample, as stated above in the lesson.  Per this answer], it's still a possible allele (that's why there's are both REF/ALT specified in the VCF), but it was unobserved in the sample.
+
+<!-- ran plink2 here -->
+
+Read the `.het` file and the log, then answer:
+
+4. Do `O(HOM)`, `O(HET)`, and `OBS_CT` agree with the hand table for all five
+   samples?
+
+Yes.  Winner winner, chicken dinner!
+
+5. Verify Ada's reported `F` by substituting Ada's `O(HET)` and `E(HET)` into
+   the formula above.
+
+* `F`: `1 - O(HET) / E(HET)`.
+
+It checked out.  Here's a snippet of an IPython session:
+
+```
+In [22]: F = 1 - 2 / 2.37381
+
+In [23]: F
+Out[23]: 0.15747258626427563
+```
+
+6. Which sample has the most negative `F`, and which has the most positive `F`?
+   Relate each sign to its observed-versus-expected heterozygosity.
+
+Chen had the most positive `F`, at 1.  This means Chen had more homozygous calls than expected.  Ben was the only negative `F`, and therefore the most negative.  This means Ben had more heterozygous calls than expected.  (Based on the rule above).
+
+7. Why would it be unjustified to label either sample contaminated, inbred, or a
+   QC failure from this report?
+
+To justify any such conclusion, we'd need a larger sample size.  Indeed, if we remove "small-sample" from the plink2 run above, we get an error:
+
+```
+Error: This run requires decent allele frequencies, but they aren't being
+loaded with --read-freq, and less than 50 samples are available to impute them
+from.
+```
+We ran it with small-sample as a teaching accommodation, so being unable to use it to justify anything about QC, inbreeding, or the like was understood at the outset.
+
+8. In your own words, explain the difference between the previous per-variant
+   HWE report and this per-sample heterozygosity report.
+
+In both cases we are summarizing either rows or columns, in a larger sample we would be able to get a rough idea of the quality of our population selection and data analysis.  In the case of heterozygosity, we would be looking for a value for `F` that is "sufficiently close" to zero.  For HWE, we'd expect out observed frequencies for a given variant to be "sufficiently close" to the HWE-predicted frequency.
+
+
+## AI Comments on per-sample heterozygosity answers
+
+<!-- Add feedback after the checkpoint is completed. -->

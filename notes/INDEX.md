@@ -4,6 +4,7 @@ This is the running index for tutorial, research, and design notes. New entries 
 
 | Date | Note | Topic | Outcome |
 |---|---|---|---|
+| 2026-09-17 | [Per-sample heterozygosity lesson](2026-09-17-heterozygosity-lesson.md) | Observed/expected heterozygosity and PLINK's `--het` | Added hand counts, `F` interpretation, and a small-sample limitations checkpoint |
 | 2026-09-16 | [HWE checkpoint review](2026-09-16-hwe-checkpoint.md) | Observed and expected genotype frequencies and exact-test interpretation | Corrected the genotype/allele denominator and p-value interpretation; PLINK counts confirmed |
 | 2026-09-15 | [HWE foundations lesson](2026-09-15-hwe-foundations-lesson.md) | Observed genotype frequencies and Hardy–Weinberg equilibrium | Added conceptual background, hand calculations, and PLINK report checks |
 | 2026-09-15 | [Minor-allele-frequency lesson](2026-09-15-minor-allele-frequency-lesson.md) | Sample MAF and PLINK's `--maf` filter | Completed and reviewed the hand calculations and threshold-boundary exercise |
